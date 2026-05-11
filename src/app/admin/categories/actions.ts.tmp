@@ -1,0 +1,4 @@
+'use client';
+// Actually I'll use a separate file for server actions if I wanted to, 
+// but I'll use 'use server' inside the file or a specific actions file.
+// Let's create src/app/admin/categories/actions.ts as 'use server'
