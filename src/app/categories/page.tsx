@@ -2,7 +2,9 @@ export const dynamic = 'force-dynamic';
 
 import React from 'react';
 import Link from 'next/link';
-import { Tag, ArrowRight, ChevronRight } from 'lucide-react';
+import { ArrowRight, ChevronRight } from 'lucide-react';
+import Image from 'next/image';
+import CategoryIcon from '@/components/ui/CategoryIcon';
 import dbConnect from '@/lib/mongodb';
 import Category from '@/models/Category';
 import Product from '@/models/Product';
@@ -47,13 +49,17 @@ export default async function CategoriesPage() {
               className="group bg-card border rounded-3xl p-8 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden"
             >
               {/* Decorative background element */}
-              <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                <Tag size={120} />
+              <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity text-primary">
+                <CategoryIcon name={cat.name} size={120} />
               </div>
 
               <div className="relative z-10">
-                <div className="h-14 w-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-6 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
-                  <Tag size={28} />
+                <div className="h-14 w-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-6 group-hover:bg-primary group-hover:text-white transition-colors duration-300 relative overflow-hidden">
+                  {cat.image ? (
+                    <Image src={cat.image} alt={cat.name} fill className="object-cover" />
+                  ) : (
+                    <CategoryIcon name={cat.name} size={28} />
+                  )}
                 </div>
                 
                 <h2 className="text-2xl font-bold mb-3">{cat.name}</h2>
@@ -76,7 +82,6 @@ export default async function CategoriesPage() {
 
         {categoriesWithCounts.length === 0 && (
           <div className="text-center py-20 bg-card border rounded-3xl">
-            <Tag size={48} className="mx-auto text-muted-foreground/30 mb-4" />
             <h3 className="text-xl font-bold mb-2">No Categories Found</h3>
             <p className="text-muted-foreground">Check back soon for curated collections.</p>
           </div>

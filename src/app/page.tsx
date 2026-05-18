@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, ShoppingBag, Zap, Award, BookOpen } from 'lucide-react';
+import CategoryIcon from '@/components/ui/CategoryIcon';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import ProductCard from '@/components/product/ProductCard';
@@ -63,9 +64,12 @@ export default async function HomePage() {
                 href={`/category/${category.slug}`}
                 className="group p-6 bg-card border rounded-xl text-center hover:shadow-md transition-all hover:-translate-y-1"
               >
-                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                  {/* Mock icon if no image */}
-                  <span className="text-xl font-bold">{category.name.charAt(0)}</span>
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-primary group-hover:text-primary-foreground transition-colors relative overflow-hidden">
+                  {category.image ? (
+                    <Image src={category.image} alt={category.name} fill className="object-cover" />
+                  ) : (
+                    <CategoryIcon name={category.name} className="w-6 h-6" />
+                  )}
                 </div>
                 <h3 className="font-semibold text-sm">{category.name}</h3>
               </Link>

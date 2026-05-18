@@ -14,13 +14,29 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   
   if (!blog) return { title: 'Blog Not Found' };
   
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  const seoTitle = blog.seo?.title || `${blog.title} | BestPicks`;
+  const seoDesc = blog.seo?.description || blog.excerpt;
+  
   return {
-    title: blog.seo?.title || blog.title,
-    description: blog.seo?.description || blog.excerpt,
+    title: seoTitle,
+    description: seoDesc,
+    keywords: blog.seo?.keywords || [],
+    alternates: {
+      canonical: `${baseUrl}/blog/${slug}`,
+    },
     openGraph: {
-      title: blog.seo?.title || blog.title,
-      description: blog.seo?.description || blog.excerpt,
+      title: seoTitle,
+      description: seoDesc,
+      url: `${baseUrl}/blog/${slug}`,
       images: blog.featuredImage ? [{ url: blog.featuredImage }] : [],
+      type: 'article',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: seoTitle,
+      description: seoDesc,
+      images: blog.featuredImage ? [blog.featuredImage] : [],
     }
   };
 }
@@ -33,8 +49,40 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
     notFound();
   }
 
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: blog.title,
+    image: blog.featuredImage ? [blog.featuredImage] : [],
+    datePublished: new Date(blog.createdAt).toISOString(),
+    dateModified: new Date(blog.updatedAt).toISOString(),
+    author: {
+      '@type': 'Person',
+      name: 'BestPicks Expert',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'BestPicks',
+      logo: {
+        '@type': 'ImageObject',
+        url: `${baseUrl}/Gemini_Generated_Image_gd4h35gd4h35gd4h-removebg-preview.png`,
+      },
+    },
+    description: blog.excerpt || blog.seo?.description,
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${baseUrl}/blog/${blog.slug}`,
+    },
+  };
+
   return (
     <article className="container mx-auto px-4 py-12 max-w-4xl">
+      {/* Inject Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Link href="/blogs" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-12 transition-colors">
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back to Blog List

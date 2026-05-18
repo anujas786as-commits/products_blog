@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Search, ShoppingBag, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -22,8 +23,13 @@ const Navbar = () => {
         <div className="flex h-16 items-center justify-between gap-4">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <ShoppingBag className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold tracking-tight">BestPicks</span>
+            <Image 
+              src="/Gemini_Generated_Image_gd4h35gd4h35gd4h-removebg-preview.png"
+              alt="BestPicks Logo"
+              width={162}
+              height={162}
+              className="object-contain"
+            />
           </Link>
 
           {/* Desktop Search */}

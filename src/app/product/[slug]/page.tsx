@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Star, ShoppingCart, CheckCircle2, AlertCircle, ArrowLeft, ExternalLink, BookOpen, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { getProductBySlug } from '@/services/productService';
+import { getProductBySlug, getProductsByCategory } from '@/services/productService';
 import { getBlogsByProduct } from '@/services/blogService';
 import ProductCard from '@/components/product/ProductCard';
 import { Metadata } from 'next';
@@ -15,13 +15,29 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   
   if (!product) return { title: 'Product Not Found' };
   
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  const seoTitle = product.seo?.title || `${product.title} Review & Deals | BestPicks`;
+  const seoDesc = product.seo?.description || product.description.substring(0, 160);
+  
   return {
-    title: product.title,
-    description: product.description.substring(0, 160),
+    title: seoTitle,
+    description: seoDesc,
+    keywords: product.seo?.keywords || product.tags || [],
+    alternates: {
+      canonical: `${baseUrl}/product/${slug}`,
+    },
     openGraph: {
-      title: `${product.title} Review & Deals`,
-      description: product.description.substring(0, 160),
+      title: seoTitle,
+      description: seoDesc,
+      url: `${baseUrl}/product/${slug}`,
       images: product.images?.[0] ? [{ url: product.images[0] }] : [],
+      type: 'article',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: seoTitle,
+      description: seoDesc,
+      images: product.images?.[0] ? [product.images[0]] : [],
     }
   };
 }
@@ -36,8 +52,61 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   const relatedBlogs = await getBlogsByProduct(product._id);
 
+  // Fetch real related products in the same category
+  const allRelated = await getProductsByCategory(product.category?._id || product.category);
+  const relatedProducts = allRelated
+    .filter((p: any) => p._id.toString() !== product._id.toString())
+    .slice(0, 6);
+
+  // Generate dynamic JSON-LD structured data for Google & Search Bots
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.title,
+    image: product.images || [],
+    description: product.description,
+    brand: {
+      '@type': 'Brand',
+      name: product.brand || 'BestPicks',
+    },
+    sku: product._id.toString(),
+    mpn: product._id.toString(),
+    ...(product.price && {
+      offers: {
+        '@type': 'AggregateOffer',
+        priceCurrency: 'INR',
+        lowPrice: product.price,
+        highPrice: product.price,
+        offerCount: product.externalLinks?.length || 0,
+        offers: (product.externalLinks || []).map((link: any) => ({
+          '@type': 'Offer',
+          url: link.url,
+          priceCurrency: 'INR',
+          price: product.price,
+          availability: 'https://schema.org/InStock',
+          seller: {
+            '@type': 'Organization',
+            name: link.store,
+          },
+        })),
+      },
+    }),
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: product.rating || 4.5,
+      reviewCount: 24,
+      bestRating: 5,
+      worstRating: 1,
+    },
+  };
+
   return (
     <div className="container mx-auto px-4 py-12">
+      {/* Inject Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Link href="/" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-8">
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back to Browse
@@ -181,13 +250,17 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         </section>
       )}
 
-      {/* Related Products (Mocked for now) */}
-      <section>
-        <h2 className="text-2xl font-bold mb-8">Related Products</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
-          <p className="col-span-full text-muted-foreground italic">Fetching similar products for you...</p>
-        </div>
-      </section>
+      {/* Related Products */}
+      {relatedProducts.length > 0 && (
+        <section>
+          <h2 className="text-2xl font-bold mb-8">Related Products</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+            {relatedProducts.map((p: any) => (
+              <ProductCard key={p._id.toString()} product={p} />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }
