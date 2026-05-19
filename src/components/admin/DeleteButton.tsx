@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
-import { Trash2 } from 'lucide-react';
+import React, { useTransition } from 'react';
+import { Trash2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 
 interface DeleteButtonProps {
   id: string;
@@ -10,18 +11,29 @@ interface DeleteButtonProps {
   label?: string;
 }
 
-export default function DeleteButton({ id, action, label = "this item" }: DeleteButtonProps) {
+export default function DeleteButton({ id, action, label = 'this item' }: DeleteButtonProps) {
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+
+  const handleDelete = () => {
+    if (!confirm(`Are you sure you want to delete ${label}? This cannot be undone.`)) return;
+
+    startTransition(async () => {
+      await action(id);
+      router.refresh();
+    });
+  };
+
   return (
-    <form 
-      action={async () => {
-        if (confirm(`Are you sure you want to delete ${label}?`)) {
-          await action(id);
-        }
-      }}
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={handleDelete}
+      disabled={isPending}
+      className="text-destructive hover:bg-destructive/10 disabled:opacity-50"
+      title={`Delete ${label}`}
     >
-      <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10">
-        <Trash2 size={16} />
-      </Button>
-    </form>
+      {isPending ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
+    </Button>
   );
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Plus, Edit, ExternalLink } from 'lucide-react';
+import { Plus, Edit, ExternalLink, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import dbConnect from '@/lib/mongodb';
 import Product from '@/models/Product';
@@ -57,7 +57,10 @@ export default async function AdminProductsPage() {
                 <td className="px-6 py-4 text-right">
                   <div className="flex items-center justify-end gap-2">
                     <Link href={`/product/${prod.slug}`} target="_blank">
-                      <Button variant="ghost" size="icon"><ExternalLink size={16} /></Button>
+                      <Button variant="ghost" size="icon" title="View live"><ExternalLink size={16} /></Button>
+                    </Link>
+                    <Link href={`/admin/products/${prod._id.toString()}/edit`}>
+                      <Button variant="ghost" size="icon" title="Edit product"><Pencil size={16} /></Button>
                     </Link>
                     <DeleteButton id={prod._id.toString()} action={deleteProduct} label="product" />
                   </div>

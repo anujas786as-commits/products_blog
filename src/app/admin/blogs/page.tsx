@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Plus, Globe } from 'lucide-react';
+import { Plus, Globe, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import dbConnect from '@/lib/mongodb';
 import Blog from '@/models/Blog';
@@ -44,7 +44,10 @@ export default async function AdminBlogsPage() {
                 <td className="px-6 py-4 text-right">
                   <div className="flex items-center justify-end gap-2">
                     <Link href={`/blog/${blog.slug}`} target="_blank">
-                      <Button variant="ghost" size="icon"><Globe size={16} /></Button>
+                      <Button variant="ghost" size="icon" title="View live"><Globe size={16} /></Button>
+                    </Link>
+                    <Link href={`/admin/blogs/${blog._id.toString()}/edit`}>
+                      <Button variant="ghost" size="icon" title="Edit blog post"><Pencil size={16} /></Button>
                     </Link>
                     <DeleteButton id={blog._id.toString()} action={deleteBlog} label="blog post" />
                   </div>

@@ -11,11 +11,12 @@ interface Product {
 
 interface ProductSelectorProps {
   products: Product[];
+  defaultSelectedIds?: string[];
 }
 
-export default function ProductSelector({ products }: ProductSelectorProps) {
+export default function ProductSelector({ products, defaultSelectedIds = [] }: ProductSelectorProps) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectedIds, setSelectedIds] = useState<string[]>(defaultSelectedIds);
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
