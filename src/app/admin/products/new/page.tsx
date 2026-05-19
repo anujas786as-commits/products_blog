@@ -7,8 +7,35 @@ import Category from '@/models/Category';
 import { createProduct } from '../../actions';
 
 export default async function NewProductPage() {
-  await dbConnect();
-  const categories = await Category.find({}).sort({ name: 1 });
+  let categories: { _id: string; name: string }[] = [];
+  let dbError: string | null = null;
+
+  try {
+    await dbConnect();
+    const raw = await Category.find({}).sort({ name: 1 });
+    categories = raw.map((c: { _id: { toString: () => string }; name: string }) => ({
+      _id: c._id.toString(),
+      name: c.name,
+    }));
+  } catch (err) {
+    console.error('[NewProductPage] DB error:', err);
+    dbError = err instanceof Error ? err.message : 'Unknown database error';
+  }
+
+  if (dbError) {
+    return (
+      <div className="max-w-4xl mx-auto space-y-8">
+        <Link href="/admin/products" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary transition-colors">
+          <ArrowLeft className="mr-2 h-4 w-4" /> Back to List
+        </Link>
+        <div className="bg-red-500/10 border border-red-500/30 rounded-3xl p-8 text-center space-y-4">
+          <p className="text-2xl font-black text-red-500">Database Connection Error</p>
+          <p className="text-muted-foreground text-sm font-mono break-all">{dbError}</p>
+          <p className="text-sm text-muted-foreground">Check that <code className="bg-muted px-1 rounded">MONGODB_URI</code> is correctly set in your Vercel environment variables and points to a reachable MongoDB instance (e.g., MongoDB Atlas).</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
