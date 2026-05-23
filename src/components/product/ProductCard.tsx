@@ -57,15 +57,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <p className="text-lg font-bold mb-4">₹{product.price.toLocaleString()}</p>
         )}
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
           <Link href={`/product/${product.slug}`} className="flex-1">
-            <Button variant="outline" size="sm" className="w-full text-xs">
+            <Button variant="outline" size="sm" className="w-full text-xs h-9">
               View Details
             </Button>
           </Link>
           {primaryLink && (
             <a href={primaryLink.url} target="_blank" rel="noopener noreferrer" className="flex-1">
-              <Button size="sm" className="w-full text-xs">
+              <Button size="sm" className="w-full text-xs h-9">
                 Buy Now
                 <ExternalLink className="h-3 w-3 ml-1" />
               </Button>

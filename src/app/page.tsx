@@ -25,26 +25,26 @@ export default async function HomePage() {
       <section className="relative bg-muted/30 py-20 md:py-32 overflow-hidden">
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-2xl">
-            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6">
+            <h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold tracking-tight mb-6">
               Find the Best Products, <br />
               <span className="text-primary">Expertly Curated.</span>
             </h1>
-            <p className="text-lg text-muted-foreground mb-8">
+            <p className="text-base sm:text-lg text-muted-foreground mb-8">
               We research and compare products from top marketplaces so you don't have to. 
               Get the best deals on Amazon, Flipkart, and Meesho.
             </p>
-            <div className="flex flex-wrap gap-4">
-              <Link href="#featured" className={cn(buttonVariants({ size: 'lg' }))}>
+            <div className="flex flex-col sm:flex-row flex-wrap gap-4">
+              <Link href="#featured" className={cn(buttonVariants({ size: 'lg' }), "w-full sm:w-auto")}>
                   Browse Featured <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
-              <Link href="/blogs" className={cn(buttonVariants({ size: 'lg', variant: 'outline' }))}>
+              <Link href="/blogs" className={cn(buttonVariants({ size: 'lg', variant: 'outline' }), "w-full sm:w-auto")}>
                   Read Buying Guides
               </Link>
             </div>
           </div>
         </div>
         {/* Decorative background element */}
-        <div className="absolute top-1/2 -right-24 -translate-y-1/2 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 -right-12 md:-right-24 -translate-y-1/2 w-64 h-64 md:w-96 md:h-96 bg-primary/10 rounded-full blur-3xl" />
       </section>
 
       {/* Categories Section */}
